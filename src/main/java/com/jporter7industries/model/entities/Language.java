@@ -1,9 +1,6 @@
 package com.jporter7industries.model.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by jeffryporter on 8/29/16.
@@ -16,6 +13,7 @@ public class Language
     @GeneratedValue
     private int id;
 
+    @Column(nullable = false)
     private String language;
 
     public Language()

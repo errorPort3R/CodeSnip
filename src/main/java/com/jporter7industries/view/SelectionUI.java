@@ -1,7 +1,9 @@
 package com.jporter7industries.view;
 
-import com.jporter7industries.model.entities.CodeSnippet;
+import com.jporter7industries.model.entities.Language;
 import com.jporter7industries.model.services.CodeSnippetRepository;
+import com.jporter7industries.model.services.LanguageRepository;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -9,13 +11,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import org.h2.tools.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 
 /**
  * Created by jeffryporter on 8/29/16.
  */
-
+@Controller
 public class SelectionUI implements EventHandler<ActionEvent>
 {
     private Stage selectionStage;
@@ -26,6 +34,21 @@ public class SelectionUI implements EventHandler<ActionEvent>
 
     @Autowired
     CodeSnippetRepository snippets;
+
+    @Autowired
+    LanguageRepository languages;
+
+
+    public void init() throws SQLException, IOException
+    {
+        //for H2 builds ONLY!!!!!!*****************************//
+        Server.createWebServer("-webPort", "39071").start();    //
+        //for H2 builds ONLY!!!!!!*****************************//
+        if (languages == null)
+        {
+            addLanguages();
+        }
+    }
 
 
     public class searchBtnHandler implements EventHandler<ActionEvent>
@@ -55,8 +78,9 @@ public class SelectionUI implements EventHandler<ActionEvent>
 
 
 
-    public SelectionUI(Stage stage)
+    public SelectionUI(Stage stage) throws IOException, SQLException
     {
+        init();
         selectionStage = stage;
         GridPane pane = new GridPane();
         GridPane topInsertPane = new GridPane();
@@ -76,7 +100,18 @@ public class SelectionUI implements EventHandler<ActionEvent>
 
         //TOP INSERT PANE START
         Label lbl = new Label("Language:");
+        ArrayList<Language> langList = (ArrayList<Language>)languages;
+        ArrayList<String> langStringList = new ArrayList<>();
         language = new ComboBox();
+        if (langList.isEmpty())
+        {
+            for (Language l : langList)
+            {
+                langStringList.add(l.getLanguage());
+            }
+            language.setItems((ObservableList) langStringList);
+        }
+
         Button langPlusBtn = new Button("+");
         topInsertPane.add(lbl, 0, 1);
         topInsertPane.add(language, 1, 1);
@@ -125,5 +160,17 @@ public class SelectionUI implements EventHandler<ActionEvent>
     public void handle(ActionEvent event)
     {
         selectionStage.close();
+    }
+
+    public void addLanguages()
+    {
+        String[] langList = {"java", "javascript", "php", "c", "c++", "c#", "angular.js", "node.js", "android studio",
+                "sql", "clojure", "python", "ruby", "react.js", "springMVC", "hibernate"};
+        for(String l: langList)
+        {
+            Language newLang = new Language(l);
+            languages.save(newLang);
+        }
+
     }
 }
