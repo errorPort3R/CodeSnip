@@ -10,11 +10,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 /**
  * Created by jeffryporter on 8/29/16.
  */
-
 
 public class SelectionUI implements EventHandler<ActionEvent>
 {
